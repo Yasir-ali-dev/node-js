@@ -2,7 +2,7 @@ const CustomAPIError = require("./CustomAPIError");
 
 class UnAuthorisedError extends CustomAPIError {
   constructor(message) {
-    this.message = message;
+    super(message);
     this.statusCode = 403;
   }
 }

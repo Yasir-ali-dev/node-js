@@ -6,6 +6,7 @@ require("express-async-errors");
 const connecDB = require("./db/connectDB");
 const { default: mongoose } = require("mongoose");
 const router = require("./routes/shop-route");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use("/items", router);
 app.get("/", (req, res) => {
   res.send("home page");
 });
+
+app.use(errorHandler);
 
 const port = process.env.PORT;
 const start = async () => {
