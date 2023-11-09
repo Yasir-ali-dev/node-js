@@ -29,11 +29,7 @@ const getItem = async (req, res) => {
   if (!id) {
     throw new BadRequestError("please provide the item id");
   }
-  try {
-    const item = await Shop.find({ _id: id });
-  } catch (error) {
-    throw new Error();
-  }
+  const item = await Shop.find({ _id: id });
   if (!item) {
     throw new NotFoundError("item not found");
   }
