@@ -5,7 +5,8 @@ require("dotenv").config();
 require("express-async-errors");
 const connecDB = require("./db/connectDB");
 const { default: mongoose } = require("mongoose");
-const router = require("./routes/shop-route");
+const itemRouter = require("./routes/shop-route");
+const authRouter = require("./routes/auth-route");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
@@ -13,8 +14,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
-app.use("/items", router);
-
+app.use("/items", itemRouter);
+app.use("/auth", authRouter);
 app.get("/", (req, res) => {
   res.send("home page");
 });
