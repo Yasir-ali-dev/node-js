@@ -1,11 +1,9 @@
-const {
-  BadRequestError,
-  NotFoundError,
-  UnAuthorisedError,
-} = require("../errors");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Auth = require("../model/Auth");
 const { StatusCodes } = require("http-status-codes");
+const { BadRequestError, UnAuthorisedError } = require("../errors");
+require("dotenv").config();
 
 const signUp = async (req, res) => {
   const { password, email } = req.body;
@@ -18,7 +16,17 @@ const signUp = async (req, res) => {
   const saltRound = 10;
   const hashedPassword = await bcrypt.hash(password, saltRound);
   const customer = await Auth.create({ email, password: hashedPassword });
-  res.status(StatusCodes.CREATED).json({ success: true, customer: customer });
+
+  const token = jwt.sign(
+    { password: password, email: email },
+    `${process.env.SECRET_KEY}`,
+    {
+      expiresIn: 60 * 60,
+    }
+  );
+  res
+    .status(StatusCodes.CREATED)
+    .json({ success: true, customer: customer, token });
 };
 
 const login = async (req, res) => {

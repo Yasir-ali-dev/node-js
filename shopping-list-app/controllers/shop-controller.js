@@ -5,7 +5,9 @@ const Shop = require("../model/Shop");
 const getAllItems = async (req, res) => {
   try {
     const allItems = await Shop.find({}); //{} no filter fetch all items
-    res.status(StatusCodes.OK).json({ success: true, items: allItems });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, items: allItems, customer: req.user.email });
   } catch (error) {
     throw new CustomAPIError();
   }
@@ -18,7 +20,9 @@ const createItem = async (req, res) => {
   }
   try {
     const item = await Shop.create(req.body);
-    res.status(StatusCodes.CREATED).json({ success: true, item });
+    res
+      .status(StatusCodes.CREATED)
+      .json({ success: true, item, customer: req.user.email });
   } catch (error) {
     throw new Error();
   }
@@ -33,7 +37,9 @@ const getItem = async (req, res) => {
   if (!item) {
     throw new NotFoundError("item not found");
   }
-  res.status(StatusCodes.OK).json({ success: true, item });
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, item, customer: req.user.email });
 };
 
 const updateItem = async (req, res) => {
@@ -49,7 +55,9 @@ const updateItem = async (req, res) => {
   if (!newItem) {
     throw new NotFoundError("Item not found");
   }
-  res.status(StatusCodes.OK).json({ success: true, item: newItem });
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, item: newItem, customer: req.user.email });
   //Cast to ObjectId failed for value
 };
 
@@ -62,7 +70,9 @@ const deleteItem = async (req, res) => {
   if (!deleteItem) {
     throw new NotFoundError("Item not found");
   }
-  res.status(StatusCodes.OK).json({ success: true, item: deletedItem });
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, item: deletedItem, customer: req.user.email });
 };
 
 module.exports = {
