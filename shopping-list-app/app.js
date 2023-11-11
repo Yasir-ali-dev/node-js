@@ -9,8 +9,12 @@ const itemRouter = require("./routes/shop-route");
 const authRouter = require("./routes/auth-route");
 const errorHandler = require("./middlewares/errorHandler");
 const authentication = require("./middlewares/authentication");
-
 const app = express();
+
+const { validate } = require("jsonschema");
+const bookSchema = require("./bookSchema.json");
+const { StatusCodes } = require("http-status-codes");
+const { NotFoundError, BadRequestError } = require("./errors");
 
 app.use(express.json());
 app.use(cors());
@@ -20,6 +24,23 @@ app.use("/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.send("home page");
+});
+app.post("/books", (req, res, next) => {
+  const result = validate(req.body, bookSchema);
+
+  // jsonschema validation results in a "valid" key being set to "false" if the instance doesn't match the schema
+  if (!result.valid) {
+    // pass the validation errors to the error handler
+    //  the "stack" key is generally the most useful
+    throw new BadRequestError(result.errors.map((error) => error.stack));
+  }
+
+  // at this point in the code, we know we have a valid payload with a data key
+  const book = req.body;
+  /* 
+    (not implemented) insert the book into the database here
+  */
+  return res.status(201).json({ book });
 });
 
 app.use(errorHandler);
