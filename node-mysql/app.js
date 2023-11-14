@@ -90,6 +90,8 @@ const deleteRow = (tableName, conditionName, conditionNameValue) => {
   });
 };
 
+// deleteRow("employee", "id", 1);
+
 app.listen(3001, () => {
   console.log("app is listening to the port 3001");
 });
