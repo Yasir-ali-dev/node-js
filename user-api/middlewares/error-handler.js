@@ -6,5 +6,8 @@ const errorHandler = (err, req, res, next) => {
     message: err.message || "Something went wrong, Please try again!",
   };
 
+  console.log("here");
   res.status(customError.statusCode).json({ message: message });
 };
+
+module.exports = errorHandler;
