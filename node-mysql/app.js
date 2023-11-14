@@ -89,8 +89,17 @@ const deleteRow = (tableName, conditionName, conditionNameValue) => {
     console.log(res);
   });
 };
-
 // deleteRow("employee", "id", 1);
+
+const callProcedure = (procedure) => {
+  const insertedQuery = `CALL ??`;
+  const query = mysql.format(insertedQuery, [procedure]);
+  pool.query(query, (err, res) => {
+    if (err) throw err;
+    console.log(res);
+  });
+};
+// callProcedure("get_all_employee");
 
 app.listen(3001, () => {
   console.log("app is listening to the port 3001");
