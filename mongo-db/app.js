@@ -54,7 +54,37 @@ const updating = async () => {
   const query = await Tank.updateOne({ size: 5 }, { size: 17, name: "TZ-1" });
   console.log(query);
 };
-updating();
+// updating();
+
+//----------------------------- documents --------------------
+const doc = new Tank();
+console.log(
+  doc instanceof Tank,
+  doc instanceof mongoose.Model,
+  doc instanceof mongoose.Document
+);
+const updatingDocument = async () => {
+  doc.name = "TZ-10";
+  doc.size = 3;
+  await doc.save();
+};
+// updatingDocument();
+
+const validateDocument = async () => {
+  const x_small = new Tank({ name: 1, size: "2" });
+  const obj = await x_small.validate();
+  console.log(x_small);
+};
+// validateDocument();
+
+const overwriteDocument = async () => {
+  //   const small = await Tank.findOne({ _id: "65547762420723aa1f7e967a" });
+  //   small.overwrite({ name: "TZ-111" });
+  //   const over = await small.save();
+  //   console.log(over);
+  await Tank.replaceOne({ _id: "65547762420723aa1f7e967a" }, { size: 111 });
+};
+// overwriteDocument();
 
 const port = process.env.PORT;
 const start = async () => {
