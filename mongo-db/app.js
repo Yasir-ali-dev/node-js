@@ -15,6 +15,7 @@ const tankSchema = new mongoose.Schema({
   },
 });
 const Tank = mongoose.model("tanks", tankSchema);
+
 async function creatingTank(object) {
   /*  
   // using constructor method
@@ -39,22 +40,60 @@ async function CreateManyDocuments(arrOfDocument) {
 
 const querying = async () => {
   //   const query = await Tank.findOne({ size: 10 });
-  const query = await Tank.findById({ _id: "6554762d0b241e0751e5b182" });
+  const query = await Tank.findById(
+    { _id: "65547e3f8ebb74011000b56a" },
+    "size"
+  );
   console.log(query);
 };
 // querying();
 
+const findTank = async () => {
+  const query = await Tank.findOne({ name: "E-large" }, "name");
+  console.log(query);
+};
+// findTank();
+
 const deleting = async () => {
-  const query = await Tank.deleteMany({ name: "small" });
+  const query = await Tank.deleteOne({ size: { $gte: 17 } });
   console.log(query, query.acknowledged, query.deletedCount);
 };
 // deleting();
+
+const deleteById = async () => {
+  const query = await Tank.findByIdAndDelete("65547e3f8ebb74011000b56a");
+  console.log(query);
+};
+// deleteById();
 
 const updating = async () => {
   const query = await Tank.updateOne({ size: 5 }, { size: 17, name: "TZ-1" });
   console.log(query);
 };
+
 // updating();
+
+const findReplace = async () => {
+  const query = await Tank.replaceOne(
+    { name: "TZ-1" },
+    { size: 17, name: "TZ-1" }
+  );
+  console.log(query);
+};
+findReplace();
+
+const updateById = async () => {
+  const query = await Tank.findByIdAndUpdate(
+    "65547762420723aa1f7e967b",
+    {
+      size: 17,
+      name: "Ex-Large",
+    },
+    { new: true }
+  );
+  console.log(query);
+};
+// updateById();
 
 //----------------------------- documents --------------------
 const doc = new Tank();
