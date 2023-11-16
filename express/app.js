@@ -2,9 +2,11 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const ejs = require("ejs");
+const multer = require("multer");
+const path = require("path");
 
 const userRouter = require("./routes/user-routes");
-
 // Middleware functions are functions that have access (req), (res), and the next function in the application’s request-response cycle.
 
 //1. Make changes to the request and the response objects (customize a flash message or information to be sent to the user)
@@ -14,11 +16,12 @@ const userRouter = require("./routes/user-routes");
 // Middleware is code that gets run in between the request and the response. We’ve seen some examples of middleware already like body-parser, but
 // we can write our own middleware as well! We will also be using our own custom middleware to configure the express router and handle errors.
 // To include middleware we use the app.use function.
-
+app.set("view engine", "ejs");
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+/*
 // on every request the middleware runs
 // app.use((req, res, next) => {
 //   console.log("middleware just runs!!");
@@ -44,6 +47,27 @@ app.use((req, res, next) => {
   const err = new Error("Not Found");
   err.status = 404;
   return res.json({ messsage: err.message }); // pass the error to the next piece of middleware
+});
+
+*/
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "images");
+  },
+  filename: (req, file, callback) => {
+    console.log(file);
+    callback(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.get("/upload", (req, res) => {
+  res.render("index");
+});
+
+app.post("/upload", upload.single("image"), (req, res) => {
+  res.send("Image uploaded");
 });
 
 const port = 7000;
