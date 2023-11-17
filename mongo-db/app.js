@@ -2,9 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const connecDB = require("./db/connectDB");
 const { default: mongoose } = require("mongoose");
-
+const uploadRouter = require("./routes/route");
 const app = express();
+const path = require("path");
 
+app.set("view engine", "ejs");
+
+app.use("/upload", uploadRouter);
 // mongoose schema
 const tankSchema = new mongoose.Schema({
   name: {
@@ -80,7 +84,7 @@ const findReplace = async () => {
   );
   console.log(query);
 };
-findReplace();
+// findReplace();
 
 const updateById = async () => {
   const query = await Tank.findByIdAndUpdate(
@@ -123,7 +127,7 @@ const overwriteDocument = async () => {
   //   console.log(over);
   await Tank.replaceOne({ _id: "65547762420723aa1f7e967a" }, { size: 111 });
 };
-// overwriteDocument();
+// overwriteDocument
 
 const port = process.env.PORT;
 const start = async () => {
