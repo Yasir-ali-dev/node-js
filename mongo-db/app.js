@@ -2,14 +2,28 @@ require("dotenv").config();
 const express = require("express");
 const connecDB = require("./db/connectDB");
 const { default: mongoose } = require("mongoose");
+const apicache = require("apicache");
 const uploadRouter = require("./routes/route");
 const app = express();
 const path = require("path");
+const { rateLimit } = require("express-rate-limit");
+
+const limit = rateLimit({
+  windowMs: 6 * 60 * 1000, //6 min
+  limit: 50, // 5 request limit
+});
+let cache = apicache.middleware;
 
 app.set("view engine", "ejs");
+app.set("trust proxy", 1);
 
 app.use("/upload", uploadRouter);
 // mongoose schema
+app.use(limit);
+
+app.get("/", cache("2 minutes"), (req, res) => {
+  res.status(200).json({ msg: "home" });
+});
 const tankSchema = new mongoose.Schema({
   name: {
     type: String,
