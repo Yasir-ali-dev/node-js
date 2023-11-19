@@ -1,147 +1,53 @@
 require("dotenv").config();
 const express = require("express");
 const connecDB = require("./db/connectDB");
-const { default: mongoose } = require("mongoose");
-const apicache = require("apicache");
-const uploadRouter = require("./routes/route");
+const { default: mongoose, Schema } = require("mongoose");
 const app = express();
-const path = require("path");
-const { rateLimit } = require("express-rate-limit");
 
-const limit = rateLimit({
-  windowMs: 6 * 60 * 1000, //6 min
-  limit: 50, // 5 request limit
+const numberSchema = new Schema({
+  integerNumber: {
+    type: Number,
+    get: (v) => Math.round(v),
+    set: (v) => Math.round(v),
+    alias: "i",
+    min: 0,
+    max: 1000,
+  },
 });
-let cache = apicache.middleware;
+const Numbers = mongoose.model("numbers", numberSchema);
 
-app.set("view engine", "ejs");
-app.set("trust proxy", 1);
+async function creatingNumber(object) {
+  try {
+    await Numbers.create(object);
+    console.log("user is created");
+  } catch (error) {
+    console.log(error._message);
+    throw new Error(error);
+  }
+}
+// creatingNumber({ integerNumber: 10000 });
 
-app.use("/upload", uploadRouter);
-// mongoose schema
-app.use(limit);
-
-app.get("/", cache("2 minutes"), (req, res) => {
-  res.status(200).json({ msg: "home" });
-});
-const tankSchema = new mongoose.Schema({
+const stringSchema = new Schema({
   name: {
     type: String,
-  },
-  size: {
-    type: Number,
+    lowercase: true,
+    trim: true,
+    minLength: 5,
+    maxLength: 7,
+    enum: ["yasir", "danyal", "abrar"],
   },
 });
-const Tank = mongoose.model("tanks", tankSchema);
-
+const User = mongoose.model("users", stringSchema);
 async function creatingTank(object) {
-  /*  
-  // using constructor method
-  const small = new Tank(object);
-  await small.save();
-  */
-  // using create method
-  await Tank.create(object);
-
-  // for inserting large batches of document
+  try {
+    await User.create(object);
+    console.log("user is created");
+  } catch (error) {
+    console.log(error._message);
+    throw new Error(error);
+  }
 }
-// creatingTank({ size: 10, name: "large" });
-
-async function CreateManyDocuments(arrOfDocument) {
-  await Tank.insertMany(arrOfDocument);
-}
-// CreateManyDocuments([
-//   { size: 13, name: "small" },
-//   { size: 15, name: "E-large" },
-//   { size: 17, name: "medium " },
-// ]);
-
-const querying = async () => {
-  //   const query = await Tank.findOne({ size: 10 });
-  const query = await Tank.findById(
-    { _id: "65547e3f8ebb74011000b56a" },
-    "size"
-  );
-  console.log(query);
-};
-// querying();
-
-const findTank = async () => {
-  const query = await Tank.findOne({ name: "E-large" }, "name");
-  console.log(query);
-};
-// findTank();
-
-const deleting = async () => {
-  const query = await Tank.deleteOne({ size: { $gte: 17 } });
-  console.log(query, query.acknowledged, query.deletedCount);
-};
-// deleting();
-
-const deleteById = async () => {
-  const query = await Tank.findByIdAndDelete("65547e3f8ebb74011000b56a");
-  console.log(query);
-};
-// deleteById();
-
-const updating = async () => {
-  const query = await Tank.updateOne({ size: 5 }, { size: 17, name: "TZ-1" });
-  console.log(query);
-};
-
-// updating();
-
-const findReplace = async () => {
-  const query = await Tank.replaceOne(
-    { name: "TZ-1" },
-    { size: 17, name: "TZ-1" }
-  );
-  console.log(query);
-};
-// findReplace();
-
-const updateById = async () => {
-  const query = await Tank.findByIdAndUpdate(
-    "65547762420723aa1f7e967b",
-    {
-      size: 17,
-      name: "Ex-Large",
-    },
-    { new: true }
-  );
-  console.log(query);
-};
-// updateById();
-
-//----------------------------- documents --------------------
-const doc = new Tank();
-console.log(
-  doc instanceof Tank,
-  doc instanceof mongoose.Model,
-  doc instanceof mongoose.Document
-);
-const updatingDocument = async () => {
-  doc.name = "TZ-10";
-  doc.size = 3;
-  await doc.save();
-};
-// updatingDocument();
-
-const validateDocument = async () => {
-  const x_small = new Tank({ name: 1, size: "2" });
-  const obj = await x_small.validate();
-  console.log(x_small);
-};
-// validateDocument();
-
-const overwriteDocument = async () => {
-  //   const small = await Tank.findOne({ _id: "65547762420723aa1f7e967a" });
-  //   small.overwrite({ name: "TZ-111" });
-  //   const over = await small.save();
-  //   console.log(over);
-  await Tank.replaceOne({ _id: "65547762420723aa1f7e967a" }, { size: 111 });
-};
-// overwriteDocument
+// creatingTank({ name: "      DANYALE  " });
 
 const port = process.env.PORT;
 const start = async () => {
