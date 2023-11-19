@@ -13,9 +13,12 @@ const numberSchema = new Schema({
     min: 0,
     max: 1000,
   },
+  time: {
+    type: Date,
+    default: Date.now,
+  },
 });
 const Numbers = mongoose.model("numbers", numberSchema);
-
 async function creatingNumber(object) {
   try {
     await Numbers.create(object);
@@ -25,7 +28,7 @@ async function creatingNumber(object) {
     throw new Error(error);
   }
 }
-// creatingNumber({ integerNumber: 10000 });
+// creatingNumber({ integerNumber: 1 });
 
 const stringSchema = new Schema({
   name: {
@@ -49,6 +52,44 @@ async function creatingTank(object) {
 }
 // creatingTank({ name: "      DANYALE  " });
 
+const carSchema = new mongoose.Schema({
+  driver: {
+    type: mongoose.ObjectId,
+  },
+});
+const Car = mongoose.model("cars", carSchema);
+const ferrari = new Car();
+ferrari.driver = new mongoose.Types.ObjectId();
+// console.log(ferrari.driver.toString());
+
+const arrOfString = new mongoose.Schema({
+  names: {
+    type: [String],
+  },
+});
+const Names = new mongoose.model("names", arrOfString);
+// console.log(Names({ names: ["yasir", "abal"] }).names);
+
+const authorSchema = new Schema({
+  id: Schema.Types.UUID, // Can also do `_id: 'UUID'`
+  name: String,
+});
+const Author = mongoose.model("Author", authorSchema);
+
+const bookSchema = new Schema({
+  authorId: { type: Schema.Types.UUID, ref: "Author" },
+});
+const Book = mongoose.model("Book", bookSchema);
+
+const author = new Author({ name: "Martin Fowler" });
+const book = new Book({ authorId: "09190f70-3d30-11e5-8814-0f4df9a59c41" });
+
+async function authorBook() {
+  await author.save();
+  await book.save();
+}
+authorBook();
+
 const port = process.env.PORT;
 const start = async () => {
   try {
@@ -60,7 +101,7 @@ const start = async () => {
     console.log(error);
   }
   mongoose.connection.on("error", (err) => {
-    logError(err);
+    console.log(err);
   });
 };
 
