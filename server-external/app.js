@@ -1,13 +1,15 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
+
 const passport = require("passport");
-const localStrategy = require("passport-local").Strategy;
-const session = require("cookie-session");
+const LocalStrategy = require("passport-local").Strategy;
 const connecDB = require("./db/connectDB");
 const errorHandler = require("./middlewares/errorHandler");
 const { default: mongoose } = require("mongoose");
+const session = require("cookie-session");
+const LocalAuth = require("./model/LocalAuth");
 
+const app = express();
 /*
 const redisClient = require("redis").createClient({
   host: "127.0.0.1",
@@ -45,24 +47,54 @@ app.get("/colors", (request, response) => {
 });
 
 */
-app.use(session({ secret: "Do Not Reveal The Password" }));
+app.use(express.json());
+app.set("view engine", "ejs");
+
+app.use(session({ secret: "mysecret" }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get("/", (req, res) => {
+  res.send("/");
+});
+
 passport.use(
-  new localStrategy(
+  new LocalStrategy(
     // the first parameter is an optional object with options
     {
       // when using the local strategy you MUST name your keys usernameField and passwordField.
       usernameField: "username",
-      passwordField: "secret",
+      passwordField: "password",
       passReqToCallback: true,
       // by default this option is set to false, but when specified to true, the first parameter of the verify callback will be the request object. This is quite useful if you want to see if your application has multiple strategies and you want to see if a user is already logged in with an existing strategy,
     },
-    function verifyCallback(req, username, Password, done) {}
+    async function verifyCallback(req, username, password, done) {
+      console.log(username, password);
+      const user = await LocalAuth.findOne({ username: username });
+      if (!user) {
+        return done({ msg: "user not found" }, false);
+      }
+      // if (!user || !user.validPassword(password)) {
+      //   return done(null, false);
+      // }
+
+      return done(null, user);
+    }
   )
 );
-console.log("here");
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+passport.deserializeUser((id, done) => {
+  LocalAuth.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post(
   "/login",
   passport.authenticate("local", {
@@ -72,6 +104,7 @@ app.post(
 );
 
 app.use(errorHandler);
+
 const port = process.env.PORT;
 const start = async () => {
   try {
