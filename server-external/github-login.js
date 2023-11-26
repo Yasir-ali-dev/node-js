@@ -4,7 +4,7 @@ const passport = require("passport");
 const session = require("express-session");
 const connecDB = require("./db/connectDB");
 const { default: mongoose } = require("mongoose");
-const FacebookStrategy = require("passport-facebook").Strategy;
+const GitHubStrategy = require("passport-github").Strategy;
 
 const app = express();
 
@@ -22,53 +22,42 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
-  new FacebookStrategy(
+  new GitHubStrategy(
     {
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: "http://localhost:4000/auth/facebook/callback",
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://127.0.0.1:4000/auth/github/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
       return cb(null, profile);
     }
   )
 );
-
 passport.serializeUser((user, done) => {
   return done(null, user);
 });
+
 passport.deserializeUser((user, done) => {
   return done(null, user);
 });
 
-app.get("/", (req, res) => {
-  res.render("facebook");
-});
-
-app.get("/auth/facebook", passport.authenticate("facebook"));
+app.get("/auth/github", passport.authenticate("github"));
 
 app.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/failed" }),
+  "/auth/github/callback",
+  passport.authenticate("github", { failureRedirect: "/login" }),
   function (req, res) {
     // Successful authentication, redirect home.
     res.redirect("/dashboard");
   }
 );
 
+app.get("/", (req, res) => {
+  res.render("github");
+});
 app.get("/dashboard", (req, res) => {
   console.log(req.user);
-  res.json("login succ  essfull");
-});
-
-app.get("/auth/logout", (req, res) => {
-  req.session.destroy();
-
-  res.json("logout successfully");
-});
-
-app.get("/failed", (req, res) => {
-  res.json("login failed");
+  res.json(`hello there ${req.user.displayName}`);
 });
 
 const port = process.env.PORT;
