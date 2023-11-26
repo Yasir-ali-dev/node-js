@@ -6,8 +6,9 @@ const LocalStrategy = require("passport-local").Strategy;
 const connecDB = require("./db/connectDB");
 const errorHandler = require("./middlewares/errorHandler");
 const { default: mongoose } = require("mongoose");
-const session = require("cookie-session");
+const session = require("express-session");
 const LocalAuth = require("./model/LocalAuth");
+require("./google-auth");
 
 const app = express();
 /*
@@ -47,61 +48,100 @@ app.get("/colors", (request, response) => {
 });
 
 */
+
 app.use(express.json());
 app.set("view engine", "ejs");
+app.use(
+  session({
+    secret: "mysecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
 
-app.use(session({ secret: "mysecret" }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+const isLoggedIn = (req, res, next) => {
+  req.user ? next() : res.sendStatus(401);
+};
+
 app.get("/", (req, res) => {
-  res.send("/");
+  res.render("index");
 });
 
-passport.use(
-  new LocalStrategy(
-    // the first parameter is an optional object with options
-    {
-      // when using the local strategy you MUST name your keys usernameField and passwordField.
-      usernameField: "username",
-      passwordField: "password",
-      passReqToCallback: true,
-      // by default this option is set to false, but when specified to true, the first parameter of the verify callback will be the request object. This is quite useful if you want to see if your application has multiple strategies and you want to see if a user is already logged in with an existing strategy,
-    },
-    async function verifyCallback(req, username, password, done) {
-      console.log(username, password);
-      const user = await LocalAuth.findOne({ username: username });
-      if (!user) {
-        return done({ msg: "user not found" }, false);
-      }
-      // if (!user || !user.validPassword(password)) {
-      //   return done(null, false);
-      // }
+// passport.use(
+//   new LocalStrategy(
+//     // the first parameter is an optional object with options
+//     {
+//       // when using the local strategy you MUST name your keys usernameField and passwordField.
+//       usernameField: "username",
+//       passwordField: "password",
+//       passReqToCallback: true,
+//       // by default this option is set to false, but when specified to true, the first parameter of the verify callback will be the request object. This is quite useful if you want to see if your application has multiple strategies and you want to see if a user is already logged in with an existing strategy,
+//     },
+//     async function verifyCallback(req, username, password, done) {
+//       console.log(username, password);
+//       const user = await LocalAuth.findOne({ username: username });
+//       if (!user) {
+//         return done({ msg: "user not found" }, false);
+//       }
+//       // if (!user || !user.validPassword(password)) {
+//       //   return done(null, false);
+//       // }
 
-      return done(null, user);
-    }
-  )
+//       return done(null, user);
+//     }
+//   )
+// );
+// passport.serializeUser((user, done) => {
+//   done(null, user._id);
+// });
+// passport.deserializeUser((id, done) => {
+//   LocalAuth.findById(id, (err, user) => {
+//     done(err, user);
+//   });
+// });
+
+// app.get("/login", (req, res) => {
+//   res.render("login");
+// });
+
+// app.post(
+//   "/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/",
+//     failureRedirect: "/login",
+//   })
+// );
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["email", "profile"] })
 );
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
-passport.deserializeUser((id, done) => {
-  LocalAuth.findById(id, (err, user) => {
-    done(err, user);
-  });
-});
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
-
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/auth/protected",
+    failureRedirect: "/auth/google/failure",
   })
 );
+app.get("/auth/google/failure", (req, res) => {
+  res.send("Something went wrong");
+});
+
+app.get("/auth/protected", isLoggedIn, (req, res) => {
+  let name = req.user.displayName;
+  console.log(req.user);
+  res.send(`heelo ${name}, ${req.user.email} there`);
+});
+
+app.get("/auth/logout", (req, res) => {
+  req.session.destroy();
+  res.send(`see you next time`);
+});
 
 app.use(errorHandler);
 
