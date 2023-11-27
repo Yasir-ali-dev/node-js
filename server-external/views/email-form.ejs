@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Email Form</title>
+  </head>
+  <body>
+    <h1>Email Form</h1>
+    <form
+      action="/send"
+      method="POST"
+      enctype="application/x-www-form-urlencoded"
+    >
+      <label for="yourEmail">Your Email:</label><br />
+      <input type="email" id="yourEmail" name="email" required /><br /><br />
+
+      <label for="toEmail">Subject:</label><br />
+      <input type="text" id="subject" name="subject" required /><br /><br />
+
+      <label for="message">Message:</label><br />
+      <textarea
+        id="message"
+        name="message"
+        rows="4"
+        cols="50"
+        required
+      ></textarea
+      ><br /><br />
+
+      <input type="submit" value="Send Email" />
+    </form>
+  </body>
+</html>

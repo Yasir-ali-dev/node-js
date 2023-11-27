@@ -4,14 +4,17 @@ const { default: mongoose } = require("mongoose");
 const nodemailer = require("nodemailer");
 const app = express();
 const connectDB = require("./db/connectDB");
-app.use(express.json());
+const bodyParser = require("body-parser");
+// app.use(express.json());
 app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send('<a href="/send" >send</a>');
+  res.render("email-form");
 });
 
-app.get("/send", async (req, res) => {
+app.post("/send", async (req, res) => {
+  console.log(req.body);
   const textAccount = await nodemailer.createTestAccount();
   const transporter = await nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -22,12 +25,11 @@ app.get("/send", async (req, res) => {
     },
   });
   let info = await transporter.sendMail({
-    from: '"Yasir Ali" <ya4432502@gmail.com>',
-    to: "yasirali.bscssef20@iba-suk.edu.pk",
-    subject: "hello",
-    text: "sha hall aa",
+    from: req.body.email,
+    to: process.env.ETHEREAL_MAIL,
+    subject: req.body.subject,
+    text: req.body.message,
   });
-  console.log(info);
   res.send(info);
 });
 
