@@ -5,6 +5,8 @@ const nodemailer = require("nodemailer");
 const app = express();
 const connectDB = require("./db/connectDB");
 const bodyParser = require("body-parser");
+const sgMail = require("@sendgrid/mail");
+
 // app.use(express.json());
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,7 +16,6 @@ app.get("/", (req, res) => {
 });
 
 app.post("/send", async (req, res) => {
-  console.log(req.body);
   const textAccount = await nodemailer.createTestAccount();
   const transporter = await nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -31,6 +32,20 @@ app.post("/send", async (req, res) => {
     text: req.body.message,
   });
   res.send(info);
+});
+
+app.post("/send-email", async (req, res) => {
+  console.log(req.body);
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+  const msg = {
+    to: "yasirali.bscssef20@iba-suk.edu.pk", // Change to your recipient
+    from: process.env.SENDER_IDENTITY_EMAIL, // Change to your verified sender
+    subject: req.body.subject,
+    text: req.body.message,
+  };
+  const info = await sgMail.send(msg);
+  res.json(info);
 });
 
 const port = process.env.PORT;
