@@ -39,7 +39,7 @@ app.post("/send-email", async (req, res) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
   const msg = {
-    to: "yasirali.bscssef20@iba-suk.edu.pk", // Change to your recipient
+    to: req.body.email, // Change to your recipient
     from: process.env.SENDER_IDENTITY_EMAIL, // Change to your verified sender
     subject: req.body.subject,
     text: req.body.message,
