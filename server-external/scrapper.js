@@ -17,7 +17,6 @@ $ = cheerio.load(
   false
 );
 
-console.log($.html());
 app.get("/", async (req, res) => {
   let $;
   const file = await request(
@@ -27,6 +26,37 @@ app.get("/", async (req, res) => {
       res.json($.text());
     }
   );
+});
+
+const options = {
+  url: "https://www.reddit.com/r/funny.json",
+  method: "GET",
+  headers: {
+    Accept: "application/json",
+  },
+};
+
+let formOptions = {
+  url: "http://http://mockbin.com/request",
+  form: {
+    email: "me@example.com",
+    password: "myPassword",
+  },
+};
+
+app.get("/stack", (req, res) => {
+  request(
+    "https://stackabuse.com/the-node-js-request-module/",
+    async (err, response, body) => {
+      res.json({ body });
+    }
+  );
+});
+app.get("/reddit", (req, res) => {
+  request(formOptions, async (err, response, body) => {
+    console.log(req.body);
+    res.json({ body });
+  });
 });
 
 app.listen(4000, () => {

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://cdn.socket.io/4.7.2/socket.io.min.js"
+      integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1>heleeo</h1>
+    <script>
+      const socket = io();
+      /*
+      socket.on("message", (data) => {
+        document.write(data);
+      });
+      */
+      socket.on("customEvent", (data) => {
+        document.write(data.description);
+      });
+      setTimeout(() => {
+        socket.emit("clientMessage", {
+          message: "message from client to the server!",
+        });
+      }, 5000);
+    </script>
+  </body>
+</html>
