@@ -20,6 +20,19 @@
         document.write(data.message);
       });
 
+      socket.emit("custom event", "hey");
+
+      /*
+      socket.once("first", (message) => {
+        console.log("Received first message:", message);
+      });
+      */
+
+      /*
+      socket.emit("update", { item: "Cup" }, (response) => {
+        document.write("response ", response.status);
+      });
+      */
       /*
         socket.on("customEvent", (data) => {
           document.write(data.description);

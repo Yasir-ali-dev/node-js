@@ -16,7 +16,6 @@ app.get("/", (req, res) => {
 
 let users = 0;
 io.on("connection", (socket) => {
-  console.log("user is connected", socket.id);
   users++;
   /* broadcast to all + itself 
   io.sockets.emit("broadcast", { message: `${users} users are connected` });
@@ -24,9 +23,37 @@ io.on("connection", (socket) => {
   socket.emit("newMessage", { message: `welcome ${socket.id}` });
   socket.broadcast.emit("newMessage", { message: `${users} are connected` });
 
+  /* socket.once() -- example
+  socket.emit("first", "Hello, this is the first message");
+  socket.emit("first", "Hello, this is the second message");
+ */
+
+  /*
+  socket.on("update", (obj, callback) => {
+    console.log(obj.item);
+    callback({ status: true });
+  });
+  */
+
+  // Function attached as a listener for 'custom event'
+  function myListener1(msg) {
+    console.log("Listener 1 triggered", msg);
+  }
+  // Another function attached as a listener for 'custom event'
+  function myListener2(msg) {
+    console.log("Listener 2 triggered", msg);
+  }
+  // Attach listeners to the 'custom event'
+  socket.on("custom event", myListener1);
+  socket.on("custom event", myListener2);
+  // Later, remove all listeners for 'custom event'
+
+  // Now, emit the event
+
   socket.on("disconnect", () => {
     users--;
     socket.broadcast.emit("newMessage", { message: `${users} are connected` });
+    socket.removeAllListeners("custom event");
   });
 });
 
