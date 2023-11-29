@@ -14,19 +14,19 @@ app.get("/", (req, res) => {
   res.sendFile("index.html", option);
 });
 
+let users = 0;
 io.on("connection", (socket) => {
-  console.log("user-server is connected", socket.id);
-  setTimeout(() => {
-    // socket.send("A message is event by predefined method");
-    socket.emit("customEvent", {
-      description: "message is created from server-side ",
-    });
-  }, 3000);
-  socket.on("clientMessage", (data) => {
-    console.log(data.message);
-  });
+  console.log("user is connected", socket.id);
+  users++;
+  /* broadcast to all + itself 
+  io.sockets.emit("broadcast", { message: `${users} users are connected` });
+  */
+  socket.emit("newMessage", { message: `welcome ${socket.id}` });
+  socket.broadcast.emit("newMessage", { message: `${users} are connected` });
+
   socket.on("disconnect", () => {
-    console.log("user is disconnected", socket.id);
+    users--;
+    socket.broadcast.emit("newMessage", { message: `${users} are connected` });
   });
 });
 

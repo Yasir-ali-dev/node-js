@@ -15,18 +15,21 @@
     <script>
       const socket = io();
 
-      socket.on("connection", (socket) => {
-        console.log("user-client is connceted", socket.id);
+      socket.on("newMessage", (data) => {
+        document.body.innerHTML = "";
+        document.write(data.message);
       });
 
-      socket.on("customEvent", (data) => {
-        document.write(data.description);
-      });
+      /*
+        socket.on("customEvent", (data) => {
+          document.write(data.description);
+        });
       setTimeout(() => {
         socket.emit("clientMessage", {
           message: "message from client to the server!",
         });
       }, 5000);
+      */
     </script>
   </body>
 </html>
