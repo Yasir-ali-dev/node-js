@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("user is connected");
+  console.log("user-server is connected", socket.id);
   setTimeout(() => {
     // socket.send("A message is event by predefined method");
     socket.emit("customEvent", {
@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
     console.log(data.message);
   });
   socket.on("disconnect", () => {
-    console.log("user is disconnected");
+    console.log("user is disconnected", socket.id);
   });
 });
 

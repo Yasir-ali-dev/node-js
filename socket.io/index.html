@@ -14,11 +14,11 @@
     <h1>heleeo</h1>
     <script>
       const socket = io();
-      /*
-      socket.on("message", (data) => {
-        document.write(data);
+
+      socket.on("connection", (socket) => {
+        console.log("user-client is connceted", socket.id);
       });
-      */
+
       socket.on("customEvent", (data) => {
         document.write(data.description);
       });
