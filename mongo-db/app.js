@@ -70,25 +70,7 @@ const arrOfString = new mongoose.Schema({
 const Names = new mongoose.model("names", arrOfString);
 // console.log(Names({ names: ["yasir", "abal"] }).names);
 
-const authorSchema = new Schema({
-  id: Schema.Types.UUID, // Can also do `_id: 'UUID'`
-  name: String,
-});
-const Author = mongoose.model("Author", authorSchema);
 
-const bookSchema = new Schema({
-  authorId: { type: Schema.Types.UUID, ref: "Author" },
-});
-const Book = mongoose.model("Book", bookSchema);
-
-const author = new Author({ name: "Martin Fowler" });
-const book = new Book({ authorId: "09190f70-3d30-11e5-8814-0f4df9a59c41" });
-
-async function authorBook() {
-  await author.save();
-  await book.save();
-}
-authorBook();
 
 const port = process.env.PORT;
 const start = async () => {

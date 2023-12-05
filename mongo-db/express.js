@@ -17,9 +17,9 @@ let cache = apicache.middleware;
 app.set("view engine", "ejs");
 app.set("trust proxy", 1);
 
-app.use("/upload", uploadRouter);
 // mongoose schema
 app.use(limit);
+app.use("/upload", uploadRouter);
 
 app.get("/", cache("2 minutes"), (req, res) => {
   res.status(200).json({ msg: "home" });
