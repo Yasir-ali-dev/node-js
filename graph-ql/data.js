@@ -5,22 +5,22 @@ const UserList = [
     username: "john",
     age: 20,
     nationality: "CANADA",
-    // friends: [
-    //   {
-    //     id: 2,
-    //     name: "Pedro",
-    //     username: "PedroTech",
-    //     age: 20,
-    //     nationality: "BRAZIL",
-    //   },
-    //   {
-    //     id: 5,
-    //     name: "Kelly",
-    //     username: "kelly2019",
-    //     age: 5,
-    //     nationality: "CHILE",
-    //   },
-    // ],
+    friends: [
+      {
+        id: 2,
+        name: "Pedro",
+        username: "PedroTech",
+        age: 20,
+        nationality: "BRAZIL",
+      },
+      {
+        id: 5,
+        name: "Kelly",
+        username: "kelly2019",
+        age: 5,
+        nationality: "CHILE",
+      },
+    ],
   },
   {
     id: 2,
@@ -35,15 +35,15 @@ const UserList = [
     username: "cameron",
     age: 25,
     nationality: "INDIA",
-    // friends: [
-    //   {
-    //     id: 2,
-    //     name: "Pedro",
-    //     username: "PedroTech",
-    //     age: 20,
-    //     nationality: "BRAZIL",
-    //   },
-    // ],
+    friends: [
+      {
+        id: 2,
+        name: "Pedro",
+        username: "PedroTech",
+        age: 20,
+        nationality: "BRAZIL",
+      },
+    ],
   },
   {
     id: 4,
@@ -87,5 +87,23 @@ const MovieList = [
     isInTheaters: false,
   },
 ];
+const JobList = [
+  {
+    id: 1,
+    role: "Full Stack Developer",
+  },
+  {
+    id: 2,
+    role: "Project Manager",
+  },
+  {
+    id: 3,
+    role: "Software Developer",
+  },
+  {
+    id: 4,
+    role: "Data Scientist",
+  },
+];
 
-module.exports = { UserList, MovieList };
+module.exports = { UserList, MovieList, JobList };
