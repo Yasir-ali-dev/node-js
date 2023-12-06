@@ -36,6 +36,26 @@ const typeDefs = gql`
     job(id: ID!): Job!
   }
 
+  input CreateUserInput {
+    name: String!
+    username: String!
+    age: Int!
+    nationality: Nationality = GERMANY
+  }
+  input UpdateUsernameInput {
+    id: ID!
+    newUsername: String!
+  }
+  input DeleteUserInput {
+    id: ID!
+  }
+
+  type Mutation {
+    createUser(input: CreateUserInput!): User!
+    updateUsername(input: UpdateUsernameInput!): User!
+    deleteUser(input: DeleteUserInput!): User!
+  }
+
   enum Nationality {
     INDIA
     CANADA
